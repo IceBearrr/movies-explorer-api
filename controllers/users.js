@@ -5,14 +5,6 @@ const { handleErr } = require('./errors');
 const { NODE_ENV, JWT_SECRET } = process.env;
 const User = require('../models/user');
 
-// module.exports.getUsers = (req, res) => {
-//   User.find({})
-//     .then((users) => res.send({ data: users }))
-//     .catch((err) => {
-//       handleErr(err, res);
-//     });
-// };
-
 module.exports.getCurrentUsers = (req, res) => {
   console.log(req.user._id);
   User.findById(req.user._id)
@@ -61,24 +53,3 @@ module.exports.updateUser = (req, res) => {
       handleErr(err, res);
     });
 };
-
-// module.exports.updateAvatar = (req, res) => {
-//   User.findByIdAndUpdate(req.user._id, { avatar: 'https://img5tv.cdnvideo.ru/shared/files/201706/1_506989.jpg' }, {
-//     new: true,
-//     runValidators: true,
-//   })
-//     .orFail(new Error('NotValidId'))
-//     .then((user) => res.send({ data: user }))
-//     .catch((err) => {
-//       handleErr(err, res);
-//     });
-// };
-
-// module.exports.getCurrentUsers = (req, res) => {
-//   User.findById(req.user._id)
-//     .orFail(() => new Error('NotValidId'))
-//     .then((users) => res.send({ data: users }))
-//     .catch((err) => {
-//       handleErr(err, res);
-//     });
-// };
