@@ -11,10 +11,10 @@ module.exports.handleErr = (err, res) => {
       throw new AuthError('Присланный токен некорректен');
     } else if (err.name === 'MongoError' && err.code === 11000) {
       throw new NotUniqueError('Пользователь  с таким email уже существует');
-    } else if (err.name === 'CastError' || err.name === 'ValidationError') {
+    } else if (err.email === 'CastError' || err.email === 'ValidationError') {
       throw new NotValidateError('Переданы некорректные данные');
     } else if (err.message === 'NotValidId') {
-      throw new NotFoundError('Нет пользователя с таким id');
+      throw new NotFoundError('Данные не найдены');
     } else if (err.message === 'ForbiddenError') {
       throw new ForbiddenError('Недостаточно прав');
     } else if (err.message === 'NotFound' || err.statusCode === 404) {

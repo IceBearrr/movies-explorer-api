@@ -1,6 +1,7 @@
 const { handleErr } = require('./errors');
 
 const Movie = require('../models/movie');
+const AuthError = require('../middlewares/errors/auth-err');
 
 module.exports.getMovies = (req, res) => {
   Movie.find({})
@@ -36,18 +37,24 @@ module.exports.createMovies = (req, res) => {
     });
 };
 
-module.exports.deleteMovie = (req, res) => {
+module.exports.deleteMovie = (req, res, next) => {
   Movie.findById(req.params.movieId)
     .orFail(new Error('NotValidId'))
     .then((movie) => {
       if (movie.owner._id.toString() !== req.user._id) {
         Error('ForbiddenError');
-      } else {
-        movie.remove();
-        res.status().send({ message: 'Фильм удален' });
       }
+      return movie;
     })
-    .catch((err) => {
-      handleErr(err, res);
+    .then((movie) => {
+      Movie.findOneAndRemove({ _id: movie._id })
+        .then(() => {
+          res.send({ message: 'Фильм удален' });
+        })
+        .catch(next);
+    })
+    .catch(() => {
+      const error = new AuthError('ValidationError');
+      handleErr(error, res);
     });
 };

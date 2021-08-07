@@ -4,6 +4,7 @@ const { handleErr } = require('./errors');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 const User = require('../models/user');
+const AuthError = require('../middlewares/errors/auth-err');
 
 module.exports.getCurrentUsers = (req, res) => {
   console.log(req.user._id);
@@ -23,7 +24,7 @@ module.exports.createUser = (req, res) => {
       name: req.body.name,
     }))
     .then(() => res.send({
-      message: 'Успешный логин',
+      message: 'Регистрация прошла успешно',
     }))
     .catch((err) => handleErr(err, res));
 };
@@ -31,22 +32,23 @@ module.exports.createUser = (req, res) => {
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
-    .then(() => {
+    .then((user) => {
       // создадим токен
-      const token = jwt.sign({ _id: '610988832c854f0f68058a28' },
+      const token = jwt.sign({ _id: user._id },
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
         { expiresIn: '7d' });
 
       // вернём токен
       res.send({ token });
     })
-    .catch((err) => {
-      handleErr(err, res);
+    .catch(() => {
+      const error = new AuthError('ValidationError');
+      handleErr(error, res);
     });
 };
 
 module.exports.updateUser = (req, res) => {
-  User.findByIdAndUpdate(req.user._id, { name: 'IceBear', about: 'Cool' }, { new: true, runValidators: true })
+  User.findByIdAndUpdate(req.user._id, req.body, { new: true, runValidators: true })
     .orFail(new Error('NotValidId'))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
