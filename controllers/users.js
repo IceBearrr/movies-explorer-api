@@ -34,12 +34,16 @@ module.exports.login = (req, res) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       // создадим токен
-      const token = jwt.sign({ _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
-        { expiresIn: '7d' });
-
-      // вернём токен
-      res.send({ token });
+      if (user) {
+        const token = jwt.sign({ _id: user._id },
+          NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+          { expiresIn: '7d' });
+        // вернём токен
+        res.send({ token });
+      } else {
+        const error = new AuthError('Not found user');
+        handleErr(error, res);
+      }
     })
     .catch(() => {
       const error = new AuthError('ValidationError');

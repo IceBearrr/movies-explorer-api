@@ -75,10 +75,10 @@ app.use(auth);
 //     throw new Error('Сервер сейчас упадёт');
 //   }, 0);
 // });
+app.use(errors());
+
 app.use('/users', require('./routes/users'));
 app.use('/movies', require('./routes/movies'));
-
-app.use(errors());
 
 app.get('*', (req, res) => {
   const err = new NotFoundError('Нет такой страницы');
