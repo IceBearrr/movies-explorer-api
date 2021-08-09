@@ -8,6 +8,7 @@ const {
 } = require('../controllers/movies');
 
 router.get('/', getMovies);
+
 router.post('/', celebrate({
   body: Joi.object().keys({
     country: Joi.string().required(),

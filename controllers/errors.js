@@ -11,7 +11,7 @@ module.exports.handleErr = (err, res) => {
       throw new AuthError('Присланный токен некорректен');
     } else if (err.name === 'MongoError' && err.code === 11000) {
       throw new NotUniqueError('Пользователь  с таким email уже существует');
-    } else if (err.email === 'CastError' || err.email === 'ValidationError') {
+    } else if (err.email === 'CastError' || err.email === 'ValidationError' || err.statusCode === 400) {
       throw new NotValidateError('Переданы некорректные данные');
     } else if (err.message === 'NotValidId') {
       throw new NotFoundError('Данные не найдены');

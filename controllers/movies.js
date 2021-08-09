@@ -2,6 +2,7 @@ const { handleErr } = require('./errors');
 
 const Movie = require('../models/movie');
 const AuthError = require('../middlewares/errors/auth-err');
+const NotValidateError = require('../middlewares/errors/not-validate-err');
 
 module.exports.getMovies = (req, res) => {
   Movie.find({})
@@ -32,8 +33,9 @@ module.exports.createMovies = (req, res) => {
     owner,
   })
     .then((movie) => res.send({ data: movie }))
-    .catch((err) => {
-      handleErr(err, res);
+    .catch(() => {
+      const error = new NotValidateError('ValidationError');
+      handleErr(error, res);
     });
 };
 
